@@ -2,7 +2,7 @@
 class ControllerModuleAnimateSlider extends Controller {
 	public function index($setting) {
 		$this->load->language('module/animate_slider');
-		$this->document->addStyle('view/theme/default/stylesheet/animate_slider.css');
+		$this->document->addStyle('/catalog/view/theme/default/stylesheet/animate_slider.css');
 		$this->load->model('setting/setting');
 		$this->load->model('tool/image');
 

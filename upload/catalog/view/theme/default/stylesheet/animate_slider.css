@@ -2,7 +2,7 @@
 .home-slider__item{
     position: relative;
     overflow: hidden;
-    height: 555px;
+    height: 555px !important;
     display: flex !important;
     justify-content: center;
     align-items: center;
