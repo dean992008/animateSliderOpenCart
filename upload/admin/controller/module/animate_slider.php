@@ -6,18 +6,16 @@ class ControllerModuleAnimateSlider extends Controller {
 	
 	public function index() {   
 	
-		//Load language file
 		$this->load->language('module/animate_slider');
 
-		//Set title from language file
 		$this->document->setTitle($this->language->get('heading_title'));
 		
-		//Load settings model
+		$this->load->model('extension/module');
 		$this->load->model('setting/setting');
+		$this->load->model('tool/image');
 		
-		//Save settings
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
-			$this->model_setting_setting->editSetting('animate_slider', $this->request->post);		
+			$this->model_setting_setting->editSetting('animate_slider', $this->request->post);
 					
 			$this->session->data['success'] = $this->language->get('text_success');
 						
@@ -36,21 +34,20 @@ class ControllerModuleAnimateSlider extends Controller {
 			'text_link',
 			'text_background',
 			'text_sort',
-			'text_animate'
+			'text_animate',
+			'text_enabled',
+			'text_disabled',
 		);
 		
 		foreach ($text_strings as $text) {
 			$data[$text] = $this->language->get($text);
 		}
 		
-	
-		//error handling
  		if (isset($this->error['warning'])) {
 			$data['error_warning'] = $this->error['warning'];
 		} else {
 			$data['error_warning'] = '';
 		}
-		
 		
   		$data['breadcrumbs'] = array();
 
@@ -76,20 +73,35 @@ class ControllerModuleAnimateSlider extends Controller {
 		
 		$data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
 
+		$data['placeholder'] = $this->model_tool_image->resize('no_image.png', 100, 100);
+
 		$banner_list = $this->model_setting_setting->getSetting('animate_slider');
 
-		var_dump($banner_list);
-	
-		//Check if multiple instances of this module
+		foreach ($banner_list['animate_slider'] as $slide) {
+			$data['content'][] = array(
+				'title' => $slide['title'],
+				'subtitle' => $slide['subtitle'],
+				'link' => $slide['link'],
+				'image' => $slide['image'],
+				'thumb' => $this->model_tool_image->resize($slide['image'], 100, 100),
+				'order' => $slide['order'],
+				'animate1' => $slide['animate1'],
+				'animate2' => $slide['animate2'],
+				'animate3' => $slide['animate3']
+			);
+		}
+
+		$data['animateionList'] = json_decode(file_get_contents(DIR_SYSTEM . 'dataJson/animationList.json', false), true);
+
+		
 		$data['modules'] = array();
 		
-		if (isset($this->request->post['animate_slider_module'])) {
-			$data['modules'] = $this->request->post['animate_slider_module'];
-		} elseif ($this->config->get('animate_slider_module')) { 
-			$data['modules'] = $this->config->get('animate_slider_module');
-		}		
+		if (isset($this->request->post['animate_slider_status'])) {
+			$data['animate_slider_status'] = $this->request->post['animate_slider_status'];
+		} elseif ($this->config->get('animate_slider_status')) { 
+			$data['animate_slider_status'] = $this->config->get('animate_slider_status');
+		}	
 
-		//Prepare for display
 		$this->load->model('design/layout');
 		
 		$data['layouts'] = $this->model_design_layout->getLayouts();
@@ -98,15 +110,9 @@ class ControllerModuleAnimateSlider extends Controller {
 		$data['column_left'] = $this->load->controller('common/column_left');
 		$data['footer'] = $this->load->controller('common/footer');
 
-		//Send the output
 		$this->response->setOutput($this->load->view('module/animate_slider.tpl', $data));
 	}
 	
-	/*
-	 * 
-	 * Check that user actions are authorized
-	 * 
-	 */
 	private function validate() {
 		if (!$this->user->hasPermission('modify', 'module/animate_slider')) {
 			$this->error['warning'] = $this->language->get('error_permission');
@@ -118,7 +124,5 @@ class ControllerModuleAnimateSlider extends Controller {
 			return FALSE;
 		}	
 	}
-
-
 }
 ?>
