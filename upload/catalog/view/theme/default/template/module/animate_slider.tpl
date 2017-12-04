@@ -6,7 +6,9 @@
 			<div class="home-slider__content">
 				<div class="home-slider__title" style="--animate-name: <?php echo $slide['animate1']; ?>"><?php echo $slide['title']; ?></div>
 				<div class="home-slider__desc" style="--animate-name: <?php echo $slide['animate2']; ?>"><?php echo $slide['subtitle']; ?></div>
+				<?php if(!empty($slide['link'])){ ?>
 				<a style="--animate-name: <?php echo $slide['animate3']; ?>" href="<?php echo $slide['link']; ?>">подробнее</a>
+				<?php } ?>
 			</div>
 		</div>
 	<?php } ?>
